@@ -3,21 +3,25 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout
-  title="COMP4020 prototype"
-  description="Replace this with one sentence saying what this page is. A search result and a link preview both show it."
+  title="Ambient Synth — an instrument you play"
+  description="A browser instrument: press and move to shape a live synth voice with your mouse, finger, or keyboard. There's no wrong way to play it."
 >
-  <header>
+  <header class="site-header">
     <nav aria-label="Primary">
-      <a href="./">Home</a>
+      <a href="./">Ambient Synth</a>
     </nav>
   </header>
   <main>
-    <h1>COMP4020 prototype</h1>
-    <p data-testid="intro">
-      Replace this with your prototype. This week's brief is on the course
-      website; <code>spec/README.md</code> explains how the checks in this repo
-      relate to it.
-    </p>
+    <h1 class="visually-hidden">Ambient Synth — a browser instrument</h1>
+    <div
+      id="surface"
+      class="surface"
+      tabindex="0"
+      aria-label="Playing surface. Press and drag to play, or hold the A S D F G H J keys."
+    >
+      <div id="orb" class="orb" aria-hidden="true"></div>
+      <p id="prompt" class="prompt">Press and move</p>
+    </div>
   </main>
   <script src="../scripts/main.ts"></script>
 </Layout>

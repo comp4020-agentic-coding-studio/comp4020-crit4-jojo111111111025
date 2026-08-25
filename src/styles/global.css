@@ -1,16 +1,96 @@
+html,
 body {
+  height: 100%;
   margin: 0;
-  padding: 2rem;
+  overflow: hidden;
+  background: #05060a;
+  color: #e8e8f0;
   font-family: system-ui, sans-serif;
-  line-height: 1.6;
-  color: #1a1a1a;
 }
 
 main {
-  max-width: 40rem;
-  margin: 0 auto;
+  height: 100%;
 }
 
 a {
-  color: #0b5fff;
+  color: inherit;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+}
+
+.site-header {
+  position: fixed;
+  top: 0.75rem;
+  left: 1rem;
+  z-index: 2;
+  font-size: 0.85rem;
+  opacity: 0.55;
+}
+
+.site-header a {
+  text-decoration: none;
+}
+
+.surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: pointer;
+  outline: none;
+  background: radial-gradient(circle at 50% 45%, #10121c 0%, #05060a 70%);
+}
+
+.orb {
+  --scale: 1;
+  --glow: 0.35;
+  --hue: 210;
+
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 50%;
+  background: hsl(var(--hue) 90% 70%);
+  box-shadow: 0 0 40px calc(var(--glow) * 40px) hsl(var(--hue) 90% 65% / var(--glow));
+  opacity: 0.45;
+  pointer-events: none;
+  transform: scale(var(--scale));
+  transition:
+    left 0.05s linear,
+    top 0.05s linear,
+    transform 0.12s ease-out,
+    box-shadow 0.12s ease-out,
+    opacity 0.4s ease;
+}
+
+.surface.is-active .orb {
+  opacity: 1;
+}
+
+.prompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  transform: translate(-50%, calc(-50% + 3rem));
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  color: rgb(232 232 240 / 65%);
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.prompt.hidden {
+  opacity: 0;
 }
