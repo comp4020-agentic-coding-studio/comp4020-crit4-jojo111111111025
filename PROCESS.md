@@ -1,76 +1,69 @@
 # Process overview
 
-<!-- TEMPLATE: this file is a shape to fill in, not a form. Replace everything
-     in it with your own overview, and delete this comment — `pnpm
-     check:evidence` will remind you if it's still here. -->
-
-A reading-guide to how the work came together --- a map to your process, not an
-essay about it. Markers read this file and follow its citations; they don't
-trawl the repo for evidence you didn't point at, so if a moment mattered, cite
-it.
-
-This file is the shape; the course site's
-[assessment page](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#what-you-submit)
-is the requirement, and its
-[word counts](https://comp.anu.edu.au/courses/comp4020-agentic-coding-studio/topics/assessment/#word-counts)
-cover every deliverable.
-
 ## What I built
 
-One paragraph: the thing, and the idea behind it.
+**Ambient Synth** — a single full-viewport playing surface. Press and drag with
+a mouse, finger, or pen to glide a synth voice's pitch (horizontal) and filter
+brightness (vertical); hold the A S D F G H J keys for the same voice mapped
+onto a C-major scale. There's no score, no goal, no way to play a "wrong" note
+— you can only make a different sound.
 
 ## The moments that mattered
 
-Three or four for an assignment; fewer is fine for a weekly prototype. Keep the
-list short so each moment has room to do all four jobs:
+1. **The Astro conversion script silently dropped the page's meta tags.**
+   Running the course's `stack-astro` conversion split `index.html` into
+   `Layout.astro` + `index.astro`, but the generated layout kept only
+   `<title>` — the `meta[name=description]` and `og:image` tags from the
+   original head didn't make the trip, which only showed up as two failing
+   invariant tests (`has a meta description`, `has an og:image card`), not as
+   anything the script itself flagged. Rather than accept the loss, I added
+   `description`/`card` props to `Layout.astro` and threaded them back through
+   from `index.astro`, so the contract in `spec/invariants.test.ts` — not my
+   eyeballing of the diff — is what caught it and confirmed the fix
+   ([`266b666`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-jojo111111111025/commit/266b666)).
 
-1. **what happened** --- the problem, or the thing that went wrong
-2. **what you did instead of the obvious thing** --- the call you made, and why
-   it beat the obvious one
-3. **how you knew it was right** --- the check you ran, the viewport you looked
-   at, what you read before accepting the diff
-4. **the citation** --- a commit or commit range, a `CLAUDE.md` change, a check
-   that went from red to green, a prompt paired with the commit it produced
+2. **Continuous glide instead of quantised notes.** The spec rules out any
+   "wrong" way to play, which pushed against snapping pointer X to a pentatonic
+   scale (a slip near a note boundary would look like a miss). Instead
+   `mapping.ts` maps pointer X to frequency on a continuous logarithmic curve
+   across two octaves — a theremin-style glissando where every position is a
+   valid, different sound — and reserves the actual musical scale (C major)
+   for the keyboard, which has seven discrete keys and no in-between positions
+   to get "wrong"
+   ([`e90b42e`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-jojo111111111025/commit/e90b42e)).
 
-Jobs 2 and 3 are the ones the repo can't tell a reader on its own, so they're
-where the marks are. The strongest moments are the ones where a correction
-landed in the **harness** --- the standards and checks your work has to satisfy
---- rather than in a retry: a rule added to `CLAUDE.md`, a check wired up, an
-attempt thrown away. Retrying until it passes is the routine case, and changing
-what the work runs against is the skilled one.
+3. **One voice-id per pointer and per key, not one global voice.** An early
+   sketch of the interaction had a single oscillator that pointer and keyboard
+   both fought over, so pressing a key while dragging cut the pointer's note
+   off. `Synth` keys its voice map by `pointer-<id>` / `key-<letter>`, so a
+   drag and a held key sustain independently and multiple fingers/keys can
+   sound together — checked by reading through the note-on/note-off paths for
+   each input source rather than by a test, since polyphony correctness here
+   is about not silently clobbering state
+   ([`e355e6c`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-jojo111111111025/commit/e355e6c)).
 
-Cite each moment as a link whose text is the commit hash or range and whose
-target is this repo's commit or compare URL, so a reader clicks straight to the
-evidence:
+4. **Turning the spec's checkable lines into tests, not vibes.** The published
+   spec has lines like "a stranger can play it uninstructed" and "no way to
+   play it wrong" that read as judgement calls, but parts of them are
+   structurally checkable: is there a short prompt (not a manual)? Is the
+   surface actually keyboard-focusable? Does the shipped page avoid
+   score/game-over language? `spec/crit-4.test.ts` replaces the starter's
+   worked example with exactly those checks, and is explicit in its own
+   comments about what it can't cover (sound quality, latency, real
+   expressiveness)
+   ([`9c12a4b`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit4-jojo111111111025/commit/9c12a4b)).
 
-- one commit: [`a1b2c3d`](https://github.com/YOUR-ORG/YOUR-REPO/commit/a1b2c3d)
-- a range:
-  [`a1b2c3d...e4f5a6b`](https://github.com/YOUR-ORG/YOUR-REPO/compare/a1b2c3d...e4f5a6b)
+## What still needs a human
 
-To pair a prompt with the commit it produced, quote the prompt (curated, not a
-full transcript) next to the citation:
-
-> the prompt, verbatim
-
-Screenshots are welcome where one carries the verification better than a
-sentence does. Commit the file to this repo and link it with a **relative**
-path, which is what makes it render on GitHub: `![alt text](docs/before.png)`.
-Images don't count towards the word count and don't replace the citation.
-
-### A worked moment, for shape
-
-Delete this section along with the rest of the boilerplate --- it's here to show
-the four jobs in one paragraph, not to be imitated in content.
-
-> The date formatter kept coming back with `toLocaleDateString()` and no locale
-> argument, so the same build rendered differently on my machine and in CI. I'd
-> already re-prompted it twice, which fixed the line but not the habit, so the
-> third time I put the rule in `CLAUDE.md` instead
-> ([`3f9ac21`](https://github.com/YOUR-ORG/YOUR-REPO/commit/3f9ac21)) and added
-> a spec test that fails on a bare `toLocaleDateString`. That's what told me it
-> had actually taken: the test went red against the old code and green against
-> the new, and the next two features it wrote passed it without prompting
-> ([`3f9ac21...b7e0d14`](https://github.com/YOUR-ORG/YOUR-REPO/compare/3f9ac21...b7e0d14)).
+`pnpm check` is green (typecheck, build, 24 spec/invariant tests). I could not
+run a headless browser in this environment to click-test the interaction
+myself — Playwright's Chromium is present but its system shared libraries
+(`libnspr4.so` etc.) aren't installed and there's no `sudo` in this sandbox —
+so latency, sound quality, whether the pitch/brightness mapping actually feels
+expressive, and whether a genuine stranger discovers the interaction
+unprompted are all unverified by me. Those are exactly the things the crit
+brief says a test suite can't judge anyway; I did not claim otherwise, and no
+user testing happened.
 
 ## Before you ship
 
